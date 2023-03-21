@@ -3,8 +3,5 @@ __pycache__/
 .ipynb_checkpoints/
 *.pyc
 
-latents/
-images/
-polls.json
-photos.json
-results.json
+tg_conf.py
+tg_users.json

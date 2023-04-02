@@ -46,7 +46,7 @@ def search_movies(query):
             release_date = result['release_date']
             print(f'{title} ({release_date})')
     else:
-        print('No se encontraron resultados para esta b�squeda.')
+        print('No se encontraron resultados para esta búsqueda.')
 
 
 #endregion
@@ -54,10 +54,23 @@ def search_movies(query):
 
 #region Telegram auxiliary functions
 
+def generate_request_menu(options):
+    keyboard = []
+
+    if len(options) == 1:
+        keyboard.append([])
+        keyboard[0].append(InlineKeyboardButton("✅ Confirmar", callback_data=json.dumps({'cmd': "req_1", 'opt': options[0]['id']})))
+        keyboard[0].append(InlineKeyboardButton("❌ Rechazar", callback_data=json.dumps({'cmd': "req_1", 'opt': ""})))
+    elif len(options) > 1:
+        for option in options:
+            keyboard.append([InlineKeyboardButton(option['title'], callback_data=json.dumps({'cmd': "req_n", 'opt': option['id']}))])
+
+    return InlineKeyboardMarkup(keyboard)
+
 def generate_photo_menu(msg_id, photos, cmd_type):
     keyboard = []
 
-    for command in commands[cmd_type]:
+    for command in ["Joven", "Viejo", "Hombre", "Mujer"]:
         data = json.dumps({'cmd': command, 'msg': msg_id, 'photos': photos})
         keyboard.append([InlineKeyboardButton(command, callback_data=data)])
 
@@ -261,7 +274,23 @@ def request(update, context):
     msg = msg[len("#Petición "):].split("\n")[0]
     logger.info(tg_logger_format(update, f"Request '{msg}'"))
 
-    update.message.reply_text(msg)
+    #TODO
+    options = [{'id': "447277", 'title': "[PELIC] (2023) La sirenita"}, {'id': "10144", 'title': "[PELIC] (1989) La sirenita"}]
+
+    if options:
+
+        #TODO
+        if False:
+            response = msg
+            options = [options[0]]
+        else:
+            response = "Dime con cuál se corresponde:"
+            options.append({'id': "", 'title': "❌ Ninguna"})
+
+        menu_options = generate_request_menu(options)
+        update.message.reply_text(response, reply_markup=menu_options)
+    else:
+        update.message.reply_text("No he encontrado coincidencias, puedes darme más detalles?")
 
 
     # chat_id = update.message.chat.id
@@ -390,8 +419,8 @@ def main():
     dp.add_handler(CommandHandler("start", start, Filters.user(user_id=tg_users())))
     dp.add_handler(CommandHandler("help", help, Filters.user(user_id=tg_users())))
     dp.add_handler(CommandHandler("peticion", request, Filters.user(user_id=tg_users())))
-
     dp.add_handler(MessageHandler(Filters.regex("#[Pp]etici[óo]n .*") & Filters.user(user_id=tg_users()), request))
+
     # dp.add_handler(CallbackQueryHandler(cmd, pattern='^{"cmd": .*, "msg": .*, "photos": .*}$'))
     # dp.add_handler(CallbackQueryHandler(poll, pattern='^{"id": .*, "option": .*}$'))
     # dp.add_handler(InlineQueryHandler(share))

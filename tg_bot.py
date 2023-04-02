@@ -120,20 +120,25 @@ def handler_request(update, context):
     logger.info(tg_logger_format(update, f"Request '{msg}'"))
 
     #TODO
-    options = [{'id': "447277", 'title': "[PELIC] (2023) La sirenita"}, {'id': "10144", 'title': "[PELIC] (1989) La sirenita"}]
+    matches = [{'id': "447277", 'title': "[PELIC] (2023) La sirenita"}, {'id': "10144", 'title': "[PELIC] (1989) La sirenita"}]
 
-    if options:
+    if matches:
 
         #TODO
         if True:
             response = msg
-            options = [options[0]]
+            options = [matches[0]]
         else:
             response = "Dime con cuál se corresponde:"
+            options = matches
             options.append({'id': "", 'title': "❌ Ninguna"})
 
         menu_options = tg_generate_menu_request(options)
-        update.message.reply_text(response, reply_markup=menu_options)
+        reply = update.message.reply_text(response, reply_markup=menu_options)
+
+        print(reply) #X
+        print(context.chat_data)
+        context.chat_data[reply.message_id] = matches
     else:
         update.message.reply_text("No he encontrado coincidencias, puedes darme más detalles?")
 
@@ -142,12 +147,17 @@ def handler_request_callback(update, context):
 
     #TODO
     print(data)
+    print(update)
+    print(context.chat_data)
 
     if data['cmd'] == "req_1":
         if data['opt']:
             update.callback_query.edit_message_text("[PELIC] (2023) La sirenita")
         else:
-            menu_options = tg_generate_menu_request([{'id': "447277", 'title': "[PELIC] (2023) La sirenita"}, {'id': "10144", 'title': "[PELIC] (1989) La sirenita"}, {'id': "", 'title': "❌ Ninguna"}])
+            matches = context.chat_data.pop(update.callback_query.message.message_id)
+            options = matches
+            options.append({'id': "", 'title': "❌ Ninguna"})
+            menu_options = tg_generate_menu_request(options)
             update.callback_query.edit_message_reply_markup(reply_markup=menu_options)
     elif data['cmd'] == "req_n":
         if data['opt']:

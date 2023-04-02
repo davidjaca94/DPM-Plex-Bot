@@ -125,7 +125,7 @@ def handler_request(update, context):
     if options:
 
         #TODO
-        if False:
+        if True:
             response = msg
             options = [options[0]]
         else:
@@ -143,7 +143,19 @@ def handler_request_callback(update, context):
     #TODO
     print(data)
 
-    update.callback_query.edit_message_text("patata")
+    if data['cmd'] == "req_1":
+        if data['opt']:
+            update.callback_query.edit_message_text("[PELIC] (2023) La sirenita")
+        else:
+            menu_options = tg_generate_menu_request([{'id': "447277", 'title': "[PELIC] (2023) La sirenita"}, {'id': "10144", 'title': "[PELIC] (1989) La sirenita"}, {'id': "", 'title': "❌ Ninguna"}])
+            update.callback_query.edit_message_reply_markup(reply_markup=menu_options)
+    elif data['cmd'] == "req_n":
+        if data['opt']:
+            update.callback_query.edit_message_text("[PELIC] (2023) La sirenita")
+        else:
+            update.callback_query.edit_message_text("No he encontrado coincidencias, puedes darme más detalles?")
+
+
 
 #endregion
 

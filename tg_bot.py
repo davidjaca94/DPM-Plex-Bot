@@ -1,14 +1,11 @@
 ﻿# Native imports
-import os
 import json
-import shutil
 import logging
 
 # Installed imports
 import requests
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedPhoto, ParseMode, InputMediaPhoto
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, InlineQueryHandler, ChosenInlineResultHandler, Filters
-from telegram.ext.dispatcher import run_async
+from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, Filters, CommandHandler, MessageHandler, CallbackQueryHandler
 
 # Custom imports
 from tg_conf import *
@@ -188,7 +185,7 @@ def main():
     dp.add_error_handler(handler_error)
 
     logger.info("Bot listening...")
-    updater.start_polling(timeout=60)
+    updater.start_polling(timeout=60, drop_pending_updates=False, allowed_updates=Update.ALL_TYPES)
     updater.idle()
 
 
